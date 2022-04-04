@@ -2,6 +2,10 @@ html {
   font-size: 16px;
 }
 
+body {
+  background-color: #edebed;
+}
+
 h3 {
   font-weight: 400;
 }
@@ -33,4 +37,30 @@ header * {
 
   /* font-family: "Roboto Condensed", sans-serif;
   font-weight: 400; */
+}
+
+.input-field {
+  display: flex;
+  flex-direction: column;
+  margin: 1rem 0;
+}
+
+.input-field > input,
+textarea {
+  margin-top: 0.3rem;
+}
+
+.input-field > label {
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+.save-btn {
+  width: fit-content;
+  align-self: flex-end;
+  background-color: #126e82;
+  color: white;
+  border: none;
+  border-radius: 3px;
+  padding: 3px 8px;
 }
