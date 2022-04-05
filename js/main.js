@@ -48,14 +48,20 @@ function renderEntry(entry) {
   $photoEl.setAttribute('src', entry.photoUrl);
   var $colHalfDiv = document.createElement('div');
   $colHalfDiv.setAttribute('class', 'column-half');
+  var $divSpcBtwn = document.createElement('div');
+  $divSpcBtwn.setAttribute('class', 'space-between');
   var $h2Title = document.createElement('h2');
   $h2Title.textContent = entry.title;
+  var $editIcon = document.createElement('i');
+  $editIcon.setAttribute('class', 'fas fa-pen');
   var $pNotes = document.createElement('p');
   $pNotes.textContent = entry.notes;
 
   $li.appendChild($photoEl);
   $li.appendChild($colHalfDiv);
-  $colHalfDiv.appendChild($h2Title);
+  $colHalfDiv.appendChild($divSpcBtwn);
+  $divSpcBtwn.appendChild($h2Title);
+  $divSpcBtwn.appendChild($editIcon);
   $colHalfDiv.appendChild($pNotes);
 
   return $li;
