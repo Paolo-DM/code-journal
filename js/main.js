@@ -10,6 +10,7 @@ var $noEntries = document.querySelector('.no-entries');
 var $newFormBtn = document.querySelector('.new-btn');
 var $modal = document.querySelector('.modal');
 var $entries = document.querySelector('.entries');
+var $newEntry = document.querySelector('.new-entry');
 
 $photoUrl.addEventListener('input', function () {
   $photo.setAttribute('src', $photoUrl.value);
@@ -75,6 +76,15 @@ function createDomTree() {
     }
   }
 }
+
+$ul.addEventListener('click', function (event) {
+  if (event.target.matches('i')) {
+    $entries.classList.add('hidden');
+    $newEntry.textContent = 'Edit Entry';
+    $modal.classList.remove('hidden');
+    data.editing = event.target;
+  }
+});
 
 window.addEventListener('DOMContentLoaded', createDomTree);
 
