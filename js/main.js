@@ -12,6 +12,13 @@ var $modal = document.querySelector('.modal');
 var $entries = document.querySelector('.entries');
 var $newEntry = document.querySelector('.new-entry');
 
+function assignEntryId() {
+  for (var i = data.entries.length - 1; i >= 0; i--) {
+    data.entries[i].entryId = i;
+    data.entries[i].nextEntryId = i + 1;
+  }
+}
+
 $photoUrl.addEventListener('input', function () {
   $photo.setAttribute('src', $photoUrl.value);
 });
@@ -23,20 +30,23 @@ $photoUrl.addEventListener('input', function () {
 $form.addEventListener('submit', handleSubmit);
 
 function handleSubmit(event) {
+
   event.preventDefault();
   var entryValues = {
     title: $title.value,
     photoUrl: $photoUrl.value,
-    notes: $notes.value,
-    nextEntryId: data.nextEntryId
+    notes: $notes.value
+    // nextEntryId: data.nextEntryId
+
   };
-  data.nextEntryId++;
+  // data.nextEntryId++;
   data.entries.unshift(entryValues);
   $photo.setAttribute('src', 'images/placeholder-image-square.jpg');
   $form.reset();
   $modal.classList.add('hidden');
   $ul.prepend(renderEntry(entryValues));
-  $entries.classList.remove('hidden');
+  showEntries();
+  assignEntryId();
 }
 
 function renderEntry(entry) {
@@ -44,6 +54,7 @@ function renderEntry(entry) {
 
   var $li = document.createElement('li');
   $li.setAttribute('class', 'row');
+  $li.setAttribute('data-entry-id', entry.entryId);
   var $photoEl = document.createElement('img');
   $photoEl.setAttribute('class', 'column-half');
   $photoEl.setAttribute('src', entry.photoUrl);
@@ -79,16 +90,33 @@ function createDomTree() {
 
 $ul.addEventListener('click', function (event) {
   if (event.target.matches('i')) {
-    $entries.classList.add('hidden');
+    const currentIndex = event.target.closest('li').getAttribute('data-entry-id');
+    $form.elements.title.value = data.entries[currentIndex].title;
+    $photo.setAttribute('src', data.entries[currentIndex].photoUrl);
+    $form.elements['photo-url'].value = data.entries[currentIndex].photoUrl;
+    $form.notes.value = data.entries[currentIndex].notes;
+    data.editing = data.entries[currentIndex];
+    hideEntries();
     $newEntry.textContent = 'Edit Entry';
-    $modal.classList.remove('hidden');
-    data.editing = event.target;
+    showModal();
   }
 });
 
 window.addEventListener('DOMContentLoaded', createDomTree);
 
 $newFormBtn.addEventListener('click', function (event) {
-  $entries.classList.add('hidden');
-  $modal.classList.remove('hidden');
+  hideEntries();
+  showModal();
 });
+
+function showModal() {
+  $modal.classList.remove('hidden');
+}
+
+function hideEntries() {
+  $entries.classList.add('hidden');
+}
+
+function showEntries() {
+  $entries.classList.remove('hidden');
+}
