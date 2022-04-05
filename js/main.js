@@ -6,6 +6,10 @@ var $form = document.querySelector('form');
 var $title = document.querySelector('#title');
 var $notes = document.querySelector('#notes');
 var $ul = document.querySelector('.ul-list');
+var $noEntries = document.querySelector('.no-entries');
+var $newFormBtn = document.querySelector('.new-btn');
+var $modal = document.querySelector('.modal');
+var $entries = document.querySelector('.entries');
 
 $photoUrl.addEventListener('input', function () {
   $photo.setAttribute('src', $photoUrl.value);
@@ -29,25 +33,16 @@ function handleSubmit(event) {
   data.entries.unshift(entryValues);
   $photo.setAttribute('src', 'images/placeholder-image-square.jpg');
   $form.reset();
+  $modal.classList.add('hidden');
+  $ul.prepend(renderEntry(entryValues));
+  $entries.classList.remove('hidden');
 }
 
-/*
-<ul class="row">
-        <li>
-          <img class="column-half" src="images/placeholder-image-square.jpg">
-          <div class="column-half">
-            <h2>Ada Lovelace</h2>
-            <p>Augusta Ada King, Countess of Lovelace (née Byron; 10 December
-              1815 – 27 November 1852) was an English mathematician and
-              writer, chiefly known for her work on Charles Babbage's proposed
-              mechanical general-purpose computer, the Analyticaler.</p>
-          </div>
-        </li>
-      </ul>
-*/
-
 function renderEntry(entry) {
+  $noEntries.classList.add('hidden');
+
   var $li = document.createElement('li');
+  $li.setAttribute('class', 'row');
   var $photoEl = document.createElement('img');
   $photoEl.setAttribute('class', 'column-half');
   $photoEl.setAttribute('src', entry.photoUrl);
@@ -58,17 +53,26 @@ function renderEntry(entry) {
   var $pNotes = document.createElement('p');
   $pNotes.textContent = entry.notes;
 
-  $ul.appendChild($li);
   $li.appendChild($photoEl);
   $li.appendChild($colHalfDiv);
   $colHalfDiv.appendChild($h2Title);
   $colHalfDiv.appendChild($pNotes);
+
+  return $li;
 }
 
 function createDomTree() {
-  for (var entry of data.entries) {
-    renderEntry(entry);
+  if (data.entries.length) {
+    for (var entry of data.entries) {
+      var $ulEntry = renderEntry(entry);
+      $ul.appendChild($ulEntry);
+    }
   }
 }
 
 window.addEventListener('DOMContentLoaded', createDomTree);
+
+$newFormBtn.addEventListener('click', function (event) {
+  $entries.classList.add('hidden');
+  $modal.classList.remove('hidden');
+});
