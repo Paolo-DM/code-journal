@@ -18,7 +18,7 @@
   <header>
     <div class="row container navigation align-center">
       <h3>Code Journal</h3>
-      <a class="nav-entries" href="#">Entries</a>
+      <a class="nav-entries" href="index.html">Entries</a>
     </div>
   </header>
   <main class="container">
@@ -40,10 +40,19 @@
           <div class="input-field column-full">
             <label for="notes">Notes</label>
             <textarea required id="notes" name="notes" rows="8"></textarea>
-            <button class="save-btn input-field">SAVE</button>
+            <button class="save-btn btn input-field">SAVE</button>
           </div>
         </div>
       </form>
+    </div>
+    <div data-view="entries">
+      <div class="column-full space-between" >
+        <h2>Entries</h2>
+        <a href="#" class="new-btn btn">NEW</a>
+      </div>
+      <ul class="ul-list row">
+
+      </ul>
     </div>
   </main>
   <script src="js/data.js"></script>

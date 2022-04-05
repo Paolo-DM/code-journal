@@ -44,11 +44,25 @@ textarea {
 }
 
 .save-btn {
-  width: fit-content;
   align-self: flex-end;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.space-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.btn {
   background-color: #126e82;
   color: white;
-  border: none;
   border-radius: 3px;
+  border: none;
   padding: 3px 8px;
+}
+
+.new-btn {
+  text-decoration: none;
 }
