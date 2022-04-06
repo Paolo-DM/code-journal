@@ -86,3 +86,7 @@ textarea {
 .fa-pen {
   color: #126e82;
 }
+
+.delete-entry {
+  color: red;
+}

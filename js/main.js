@@ -11,6 +11,7 @@ var $newFormBtn = document.querySelector('.new-btn');
 var $modal = document.querySelector('.modal');
 var $entries = document.querySelector('.entries');
 var $newEntry = document.querySelector('.new-entry');
+var $divDeleteSave = document.querySelector('.delete-save');
 
 $photoUrl.addEventListener('input', function () {
   $photo.setAttribute('src', $photoUrl.value);
@@ -110,6 +111,7 @@ $newFormBtn.addEventListener('click', function (event) {
 });
 
 function editEntry(event) {
+  renderDeleteEntry();
   if (event.target.matches('i')) {
     var closestLi = event.target.closest('li');
     var currentIndex = Number(closestLi.getAttribute('data-entry-id'));
@@ -129,6 +131,21 @@ function editEntry(event) {
     $form.elements['photo-url'].value = data.editing.photoUrl;
     $form.notes.value = data.editing.notes;
   }
+}
+
+function renderDeleteEntry() {
+  /*
+  <div class="delete-save row space-between align-center">
+              <a class="delete-entry;" href="#">Delete Entry</a>
+              <button class="save-btn btn input-field">SAVE</button>
+            </div>
+  */
+  var $anchorDeleteEntry = document.createElement('a');
+  $anchorDeleteEntry.setAttribute('class', 'delete-entry');
+  $anchorDeleteEntry.setAttribute('href', '#');
+  $anchorDeleteEntry.innerText = 'Delete Entry';
+
+  $divDeleteSave.prepend($anchorDeleteEntry);
 }
 
 function showModal() {
