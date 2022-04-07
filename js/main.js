@@ -1,3 +1,4 @@
+/* eslint-disable no-global-assign */
 /* global data */
 /* exported data */
 var $photoUrl = document.querySelector('#photo-url');
@@ -9,9 +10,34 @@ var $ul = document.querySelector('.ul-list');
 var $noEntries = document.querySelector('.no-entries');
 var $newFormBtn = document.querySelector('.new-btn');
 var $modal = document.querySelector('.modal');
+var $modalDelContent = document.querySelector('.modal-del-content');
+var $modalDelete = document.querySelector('.modal-delete');
 var $entries = document.querySelector('.entries');
+var $navEntries = document.querySelector('.nav-entries');
 var $newEntry = document.querySelector('.new-entry');
 var $divDeleteSave = document.querySelector('.delete-save');
+var $confirmDeleteBtn = document.querySelector('.confirm-btn');
+var $cancelDeleteBtn = document.querySelector('.cancel-btn');
+var $anchorDeleteEntry = document.createElement('a');
+
+$navEntries.addEventListener('click', goToEntries);
+
+$confirmDeleteBtn.addEventListener('click', function (event) {
+  removeEntry(event);
+  hideDeleteModal();
+  hideModal();
+  showEntries();
+});
+
+function removeEntry(entry) {
+  for (var i = 0; i < data.entries.length; i++) {
+    if (isEquivalent(data.entries[i], data.editing)) {
+      data.entries.splice(i, 1);
+    }
+  }
+  removeFromDom();
+  goToEntries();
+}
 
 $photoUrl.addEventListener('input', function () {
   $photo.setAttribute('src', $photoUrl.value);
@@ -42,22 +68,15 @@ function handleSubmit(event) {
     data.editing.photoUrl = $form.elements['photo-url'].value;
     data.editing.notes = $form.notes.value;
 
-    var $liEntries = document.querySelectorAll('li');
-    for (var li of $liEntries) {
-      var liEntryId = Number(li.getAttribute('data-entry-id'));
-      if (data.editing.entryId === liEntryId) {
-        li.replaceWith(renderEntry(data.editing));
-      }
-    }
+    replaceInDom();
     data.editing = null;
   }
-  showEntries();
-  hideModal();
+  goToEntries();
   $form.reset();
 }
 
 function renderEntry(entry) {
-  $noEntries.classList.add('hidden');
+  hideNoEntriesMsg();
 
   var $li = document.createElement('li');
   $li.setAttribute('class', 'row');
@@ -111,7 +130,10 @@ $newFormBtn.addEventListener('click', function (event) {
 });
 
 function editEntry(event) {
-  renderDeleteEntry();
+  if (!$anchorDeleteEntry.classList.contains('class')) {
+    renderDeleteEntry();
+  }
+
   if (event.target.matches('i')) {
     var closestLi = event.target.closest('li');
     var currentIndex = Number(closestLi.getAttribute('data-entry-id'));
@@ -134,18 +156,29 @@ function editEntry(event) {
 }
 
 function renderDeleteEntry() {
-  /*
-  <div class="delete-save row space-between align-center">
-              <a class="delete-entry;" href="#">Delete Entry</a>
-              <button class="save-btn btn input-field">SAVE</button>
-            </div>
-  */
-  var $anchorDeleteEntry = document.createElement('a');
+
   $anchorDeleteEntry.setAttribute('class', 'delete-entry');
   $anchorDeleteEntry.setAttribute('href', '#');
   $anchorDeleteEntry.innerText = 'Delete Entry';
 
   $divDeleteSave.prepend($anchorDeleteEntry);
+
+  $anchorDeleteEntry.addEventListener('click', function () {
+    showDeleteModal();
+  });
+}
+
+$cancelDeleteBtn.addEventListener('click', function () {
+  hideDeleteModal();
+});
+
+function goToEntries(event) {
+  hideModal();
+  showEntries();
+  if (data.entries < 1) {
+    showNoEntriesMsg();
+  }
+  data.editing = null;
 }
 
 function showModal() {
@@ -162,4 +195,59 @@ function hideEntries() {
 
 function showEntries() {
   $entries.classList.remove('hidden');
+}
+
+function showDeleteModal() {
+  $modalDelete.classList.remove('hidden');
+  $modalDelContent.classList.remove('hidden');
+}
+
+function hideDeleteModal() {
+  $modalDelete.classList.add('hidden');
+  $modalDelContent.classList.add('hidden');
+}
+
+function showNoEntriesMsg() {
+  $noEntries.classList.remove('hidden');
+}
+
+function hideNoEntriesMsg() {
+  $noEntries.classList.add('hidden');
+}
+
+function isEquivalent(a, b) {
+  var aProps = Object.getOwnPropertyNames(a);
+  var bProps = Object.getOwnPropertyNames(b);
+
+  if (aProps.length !== bProps.length) {
+    return false;
+  }
+
+  for (var i = 0; i < aProps.length; i++) {
+    var propName = aProps[i];
+    if (a[propName] !== b[propName]) {
+      return false;
+    }
+  }
+  return true;
+}
+
+function replaceInDom() {
+  var $liEntries = document.querySelectorAll('li');
+  for (var li of $liEntries) {
+    var liEntryId = Number(li.getAttribute('data-entry-id'));
+    if (data.editing.entryId === liEntryId) {
+      li.replaceWith(renderEntry(data.editing));
+    }
+  }
+}
+
+function removeFromDom() {
+  var $liEntries = document.querySelectorAll('li');
+  for (var li of $liEntries) {
+    var liEntryId = Number(li.getAttribute('data-entry-id'));
+    if (data.editing.entryId === liEntryId) {
+      li.remove();
+    }
+  }
 }
