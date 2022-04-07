@@ -1,3 +1,4 @@
+/* eslint-disable no-global-assign */
 /* global data */
 /* exported data */
 var $photoUrl = document.querySelector('#photo-url');
@@ -9,11 +10,23 @@ var $ul = document.querySelector('.ul-list');
 var $noEntries = document.querySelector('.no-entries');
 var $newFormBtn = document.querySelector('.new-btn');
 var $modal = document.querySelector('.modal');
+var $modalDelContent = document.querySelector('.modal-del-content');
+var $modalDelete = document.querySelector('.modal-delete');
 var $entries = document.querySelector('.entries');
+var $navEntries = document.querySelector('.nav-entries');
 var $newEntry = document.querySelector('.new-entry');
+var $divDeleteSave = document.querySelector('.delete-save');
+var $confirmDeleteBtn = document.querySelector('.confirm-btn');
+var $cancelDeleteBtn = document.querySelector('.cancel-btn');
+var $anchorDeleteEntry = document.createElement('a');
 
-$photoUrl.addEventListener('input', function () {
-  $photo.setAttribute('src', $photoUrl.value);
+$navEntries.addEventListener('click', goToEntries);
+
+$confirmDeleteBtn.addEventListener('click', function (event) {
+  removeEntry(event);
+  hideDeleteModal();
+  hideModal();
+  showEntries();
 });
 
 $photoUrl.addEventListener('input', function () {
@@ -21,6 +34,19 @@ $photoUrl.addEventListener('input', function () {
 });
 
 $form.addEventListener('submit', handleSubmit);
+
+window.addEventListener('DOMContentLoaded', createDomTree);
+
+$ul.addEventListener('click', editEntry);
+
+$newFormBtn.addEventListener('click', function (event) {
+  hideEntries();
+  showModal();
+});
+
+$cancelDeleteBtn.addEventListener('click', function () {
+  hideDeleteModal();
+});
 
 function handleSubmit(event) {
   event.preventDefault();
@@ -41,22 +67,15 @@ function handleSubmit(event) {
     data.editing.photoUrl = $form.elements['photo-url'].value;
     data.editing.notes = $form.notes.value;
 
-    var $liEntries = document.querySelectorAll('li');
-    for (var li of $liEntries) {
-      var liEntryId = Number(li.getAttribute('data-entry-id'));
-      if (data.editing.entryId === liEntryId) {
-        li.replaceWith(renderEntry(data.editing));
-      }
-    }
+    replaceInDom();
     data.editing = null;
   }
-  showEntries();
-  hideModal();
+  goToEntries();
   $form.reset();
 }
 
 function renderEntry(entry) {
-  $noEntries.classList.add('hidden');
+  hideNoEntriesMsg();
 
   var $li = document.createElement('li');
   $li.setAttribute('class', 'row');
@@ -100,16 +119,11 @@ function createDomTree() {
   }
 }
 
-window.addEventListener('DOMContentLoaded', createDomTree);
-
-$ul.addEventListener('click', editEntry);
-
-$newFormBtn.addEventListener('click', function (event) {
-  hideEntries();
-  showModal();
-});
-
 function editEntry(event) {
+  if (!$anchorDeleteEntry.classList.contains('class')) {
+    renderDeleteEntry();
+  }
+
   if (event.target.matches('i')) {
     var closestLi = event.target.closest('li');
     var currentIndex = Number(closestLi.getAttribute('data-entry-id'));
@@ -123,12 +137,42 @@ function editEntry(event) {
         data.editing = entry;
       }
     }
-
     $form.elements.title.value = data.editing.title;
     $photo.setAttribute('src', data.editing.photoUrl);
     $form.elements['photo-url'].value = data.editing.photoUrl;
     $form.notes.value = data.editing.notes;
   }
+}
+
+function removeEntry(entry) {
+  for (var i = 0; i < data.entries.length; i++) {
+    if (isEquivalent(data.entries[i], data.editing)) {
+      data.entries.splice(i, 1);
+    }
+  }
+  removeFromDom();
+  goToEntries();
+}
+
+function renderDeleteEntry() {
+  $anchorDeleteEntry.setAttribute('class', 'delete-entry');
+  $anchorDeleteEntry.setAttribute('href', '#');
+  $anchorDeleteEntry.innerText = 'Delete Entry';
+
+  $divDeleteSave.prepend($anchorDeleteEntry);
+
+  $anchorDeleteEntry.addEventListener('click', function () {
+    showDeleteModal();
+  });
+}
+
+function goToEntries(event) {
+  hideModal();
+  showEntries();
+  if (data.entries < 1) {
+    showNoEntriesMsg();
+  }
+  data.editing = null;
 }
 
 function showModal() {
@@ -145,4 +189,59 @@ function hideEntries() {
 
 function showEntries() {
   $entries.classList.remove('hidden');
+}
+
+function showDeleteModal() {
+  $modalDelete.classList.remove('hidden');
+  $modalDelContent.classList.remove('hidden');
+}
+
+function hideDeleteModal() {
+  $modalDelete.classList.add('hidden');
+  $modalDelContent.classList.add('hidden');
+}
+
+function showNoEntriesMsg() {
+  $noEntries.classList.remove('hidden');
+}
+
+function hideNoEntriesMsg() {
+  $noEntries.classList.add('hidden');
+}
+
+function isEquivalent(a, b) {
+  var aProps = Object.getOwnPropertyNames(a);
+  var bProps = Object.getOwnPropertyNames(b);
+
+  if (aProps.length !== bProps.length) {
+    return false;
+  }
+
+  for (var i = 0; i < aProps.length; i++) {
+    var propName = aProps[i];
+    if (a[propName] !== b[propName]) {
+      return false;
+    }
+  }
+  return true;
+}
+
+function replaceInDom() {
+  var $liEntries = document.querySelectorAll('li');
+  for (var li of $liEntries) {
+    var liEntryId = Number(li.getAttribute('data-entry-id'));
+    if (data.editing.entryId === liEntryId) {
+      li.replaceWith(renderEntry(data.editing));
+    }
+  }
+}
+
+function removeFromDom() {
+  var $liEntries = document.querySelectorAll('li');
+  for (var li of $liEntries) {
+    var liEntryId = Number(li.getAttribute('data-entry-id'));
+    if (data.editing.entryId === liEntryId) {
+      li.remove();
+    }
+  }
 }

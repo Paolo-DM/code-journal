@@ -18,7 +18,7 @@
   <header>
     <div class="row container navigation align-center">
       <h3>Code Journal</h3>
-      <a class="nav-entries" href="index.html">Entries</a>
+      <a class="nav-entries" href="">Entries</a>
     </div>
   </header>
   <main class="container">
@@ -40,7 +40,10 @@
           <div class="input-field column-full">
             <label for="notes">Notes</label>
             <textarea required id="notes" name="notes" rows="8"></textarea>
-            <button class="save-btn btn input-field">SAVE</button>
+            <div class="delete-save row space-between align-center">
+
+              <button class="save-btn btn input-field">SAVE</button>
+            </div>
           </div>
         </div>
       </form>
@@ -56,6 +59,16 @@
       <ul class="ul-list ">
 
       </ul>
+    </div>
+    <div class="modal-delete hidden">
+      <div class="modal-del-content side-margin hidden">
+        <h3 class="row justify-center">Are you sure you want to delete this entry?</h3>
+        <div class="row space-between prova3">
+          <button class="cancel-btn btn">CANCEL</button>
+          <button class="confirm-btn btn">CONFIRM</button>
+        </div>
+
+      </div>
     </div>
   </main>
   <script src="js/data.js"></script>
