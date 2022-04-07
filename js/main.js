@@ -29,25 +29,24 @@ $confirmDeleteBtn.addEventListener('click', function (event) {
   showEntries();
 });
 
-function removeEntry(entry) {
-  for (var i = 0; i < data.entries.length; i++) {
-    if (isEquivalent(data.entries[i], data.editing)) {
-      data.entries.splice(i, 1);
-    }
-  }
-  removeFromDom();
-  goToEntries();
-}
-
-$photoUrl.addEventListener('input', function () {
-  $photo.setAttribute('src', $photoUrl.value);
-});
-
 $photoUrl.addEventListener('input', function () {
   $photo.setAttribute('src', $photoUrl.value);
 });
 
 $form.addEventListener('submit', handleSubmit);
+
+window.addEventListener('DOMContentLoaded', createDomTree);
+
+$ul.addEventListener('click', editEntry);
+
+$newFormBtn.addEventListener('click', function (event) {
+  hideEntries();
+  showModal();
+});
+
+$cancelDeleteBtn.addEventListener('click', function () {
+  hideDeleteModal();
+});
 
 function handleSubmit(event) {
   event.preventDefault();
@@ -120,15 +119,6 @@ function createDomTree() {
   }
 }
 
-window.addEventListener('DOMContentLoaded', createDomTree);
-
-$ul.addEventListener('click', editEntry);
-
-$newFormBtn.addEventListener('click', function (event) {
-  hideEntries();
-  showModal();
-});
-
 function editEntry(event) {
   if (!$anchorDeleteEntry.classList.contains('class')) {
     renderDeleteEntry();
@@ -147,7 +137,6 @@ function editEntry(event) {
         data.editing = entry;
       }
     }
-
     $form.elements.title.value = data.editing.title;
     $photo.setAttribute('src', data.editing.photoUrl);
     $form.elements['photo-url'].value = data.editing.photoUrl;
@@ -155,8 +144,17 @@ function editEntry(event) {
   }
 }
 
-function renderDeleteEntry() {
+function removeEntry(entry) {
+  for (var i = 0; i < data.entries.length; i++) {
+    if (isEquivalent(data.entries[i], data.editing)) {
+      data.entries.splice(i, 1);
+    }
+  }
+  removeFromDom();
+  goToEntries();
+}
 
+function renderDeleteEntry() {
   $anchorDeleteEntry.setAttribute('class', 'delete-entry');
   $anchorDeleteEntry.setAttribute('href', '#');
   $anchorDeleteEntry.innerText = 'Delete Entry';
@@ -167,10 +165,6 @@ function renderDeleteEntry() {
     showDeleteModal();
   });
 }
-
-$cancelDeleteBtn.addEventListener('click', function () {
-  hideDeleteModal();
-});
 
 function goToEntries(event) {
   hideModal();
